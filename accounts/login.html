@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Account Application - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Subtle gold accent glow */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        /* Grid pattern overlay */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            font-style: italic;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .header .tagline {
+            font-size: 20px;
+            color: #d4af37;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .login-card {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            padding: 50px 45px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(212, 175, 55, 0.05);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Gold accent line at top */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, #f4e4bc, #d4af37);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 18px;
+            padding-right: 50px;
+            font-size: 16px;
+            font-family: inherit;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            background: #1a1a1a;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input::placeholder {
+            color: #666666;
+        }
+
+        .form-group input:hover {
+            border-color: #444444;
+        }
+
+        .form-group input:focus {
+            border-color: #d4af37;
+            background: #1f1f1f;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .form-group input.error {
+            border-color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .form-group input.valid {
+            border-color: #2ed573;
+            background: rgba(46, 213, 115, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: #666666;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #d4af37;
+        }
+
+        .password-toggle svg {
+            width: 22px;
+            height: 22px;
+            display: block;
+        }
+
+        .error-message {
+            display: none;
+            font-size: 13px;
+            color: #ff4757;
+            margin-top: 8px;
+            padding-left: 5px;
+        }
+
+        .error-message.show {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-links {
+            margin-bottom: 30px;
+        }
+
+        .form-links a {
+            display: block;
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .form-links a:hover {
+            color: #f4e4bc;
+            text-decoration: underline;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: inherit;
+            color: #000000;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4bc 50%, #d4af37 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit.loading {
+            color: transparent;
+        }
+
+        .btn-submit.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            margin: -12px 0 0 -12px;
+            border: 3px solid rgba(0, 0, 0, 0.2);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2a2a;
+            color: #666666;
+            font-size: 13px;
+        }
+
+        .security-badge svg {
+            width: 16px;
+            height: 16px;
+            color: #2ed573;
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #d4af37;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: floatParticle 15s infinite ease-in-out;
+        }
+
+        .particle:nth-child(1) {
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 20%;
+            top: 80%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(3) {
+            left: 60%;
+            top: 10%;
+            animation-delay: 4s;
+        }
+
+        .particle:nth-child(4) {
+            left: 80%;
+            top: 70%;
+            animation-delay: 6s;
+        }
+
+        .particle:nth-child(5) {
+            left: 40%;
+            top: 50%;
+            animation-delay: 8s;
+        }
+
+        .particle:nth-child(6) {
+            left: 90%;
+            top: 30%;
+            animation-delay: 10s;
+        }
+
+        @keyframes floatParticle {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: translateY(-30px) scale(1.5);
+                opacity: 0.6;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 35px 25px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .header .tagline {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1>Welcome To<br>Online Account Application</h1>
+            <p class="tagline">Unlock Global Markets With A Single Click</p>
+        </header>
+
+        <main class="login-card">
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" placeholder="Enter username"
+                            autocomplete="username" required>
+                    </div>
+                    <div class="error-message" id="usernameError">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>Please enter a valid username (minimum 3 characters)</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter password"
+                            autocomplete="current-password" required>
+                        <button type="button" class="password-toggle" id="toggleBtn">
+                            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg id="eyeOffIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                style="display: none;">
+                                <path
+                                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                </path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="error-message" id="passwordError">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>Password must be at least 8 characters</span>
+                    </div>
+                </div>
+
+                <div class="form-links">
+                    <a href="/Accounts/forgot-password.html" id="forgotLink">Forgot username or password?</a>
+                    <a href="/Accounts/sign-up.html" id="signupLink">Don't have an account? Sign up here!</a>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    Sign In
+                </button>
+
+                <!-- <div class="security-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <path d="M9 12l2 2 4-4"></path>
+                    </svg>
+                    <span>256-bit SSL Encrypted • Bank-Level Security</span>
+                </div> -->
+            </form>
+        </main>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const eyeOffIcon = document.getElementById('eyeOffIcon');
+        const usernameError = document.getElementById('usernameError');
+        const passwordError = document.getElementById('passwordError');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Password visibility toggle
+        toggleBtn.addEventListener('click', function () {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        });
+
+        // Validation functions
+        function validateUsername(value) {
+            const trimmed = value.trim();
+            const regex = /^[a-zA-Z0-9._]{3,50}$/;
+            return trimmed.length >= 3 && regex.test(trimmed);
+        }
+
+        function validatePassword(value) {
+            return value.length >= 4;
+        }
+
+        function showError(input, errorEl, show) {
+            if (show) {
+                input.classList.add('error');
+                input.classList.remove('valid');
+                errorEl.classList.add('show');
+            } else {
+                input.classList.remove('error');
+                input.classList.add('valid');
+                errorEl.classList.remove('show');
+            }
+        }
+
+        function clearValidation(input, errorEl) {
+            input.classList.remove('error', 'valid');
+            errorEl.classList.remove('show');
+        }
+
+        // Real-time validation on blur
+        usernameInput.addEventListener('blur', function () {
+            if (this.value.trim()) {
+                showError(this, usernameError, !validateUsername(this.value));
+            }
+        });
+
+        passwordInput.addEventListener('blur', function () {
+            if (this.value) {
+                showError(this, passwordError, !validatePassword(this.value));
+            }
+        });
+
+        // Clear errors on focus
+        usernameInput.addEventListener('focus', function () {
+            clearValidation(this, usernameError);
+        });
+
+        passwordInput.addEventListener('focus', function () {
+            clearValidation(this, passwordError);
+        });
+
+        // Form submission
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            let isValid = true;
+
+            // Validate username
+            if (!validateUsername(username)) {
+                showError(usernameInput, usernameError, true);
+                isValid = false;
+            } else {
+                showError(usernameInput, usernameError, false);
+            }
+
+            // Validate password
+            if (!validatePassword(password)) {
+                showError(passwordInput, passwordError, true);
+                isValid = false;
+            } else {
+                showError(passwordInput, passwordError, false);
+            }
+
+            if (username === 'admin' && password === '123456') {
+                isValid = true;
+            }
+            else if (username === 'abcsecurities' && password === '123456') {
+                isValid = true;
+            }
+            else if (username === 'demouser' && password === '123456') {
+                isValid = true;
+            }
+
+            if (isValid) {
+                // Show loading state
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+
+                // Simulate API call
+                setTimeout(function () {
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                    if (username === 'admin') {
+                        window.location.href = '/admin/dashboard.html';
+                    }
+                    else if (username === 'demouser') {
+                        window.location.href = '/applicant/applications-list.html';
+                    }
+                    else if (username === 'absecurities') {
+                        window.location.href = '/correspondent/dashboard.html';
+                    }
+                    else {
+                        alert("Wrong username or password");
+                        return;
+                    }
+                }, 2000);
+            }
+        });
+
+    </script>
+</body>
+
+</html>

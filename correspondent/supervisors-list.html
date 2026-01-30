@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correspondent Portal - Supervisors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+            color: #ffffff;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .navbar {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border-bottom: 1px solid #2a2a2a;
+            padding: 0 30px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #d4af37, #f4e4bc);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar-logo svg {
+            width: 24px;
+            height: 24px;
+            color: #000000;
+        }
+
+        .navbar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #888888;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .nav-link.active {
+            color: #d4af37;
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .nav-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .nav-link .dropdown-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+          /* User Profile Dropdown Container */
+        .user-profile-wrapper {
+            position: relative;
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+            animation: dropdownSlide 0.2s ease;
+        }
+
+        .user-dropdown-menu.show {
+            display: block;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #d4af37, #f4e4bc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .user-dropdown-icon {
+            color: #d4af37;
+            transition: transform 0.3s ease;
+        }
+
+        .user-dropdown-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            color: #d4af37;
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-create {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #000000;
+            color: #d4af37;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-create:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-create svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-profile:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #d4af37, #f4e4bc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .user-dropdown-icon {
+            color: #d4af37;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            color: #d4af37;
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .main-content {
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header {
+            background: linear-gradient(90deg, #d4af37, #c9a227);
+            padding: 18px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header h1 svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .create-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #ffffff;
+            border: none;
+            border-radius: 8px;
+            color: #000000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .create-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .content-card {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            overflow: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+        }
+
+        .data-table th {
+            padding: 16px 25px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #2a2a2a;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 16px 25px;
+            font-size: 13px;
+            color: #cccccc;
+            border-bottom: 1px solid #1a1a1a;
+            vertical-align: middle;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .data-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: scale(1.05);
+        }
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 5px;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            min-width: 180px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            z-index: 50;
+            display: none;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: dropdownFade 0.2s ease;
+        }
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #cccccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+
+        .dropdown-item svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #333333;
+            margin: 5px 0;
+        }
+
+        .table-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            padding: 18px 25px;
+            border-top: 1px solid #2a2a2a;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .pagination-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .pagination-select {
+            padding: 6px 10px;
+            font-size: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 6px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pagination-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid #333333;
+            border-radius: 6px;
+            color: #888888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        @media (max-width: 1200px) {
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            min-width: 180px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 200;
+            display: none;
+            overflow: hidden;
+        }
+
+        .nav-dropdown-menu.show {
+            display: block;
+            animation: dropdownFade 0.2s ease;
+        }
+
+        .nav-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #333333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .nav-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #c9a227;
+        }
+
+        .nav-dropdown-item svg {
+            width: 18px;
+            height: 18px;
+            color: #d4af37;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-overlay.closing {
+            opacity: 0;
+        }
+
+        .modal-overlay.closing .modal {
+            transform: translateY(30px) scale(0.95);
+            opacity: 0;
+        }
+
+        .modal {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 550px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(212, 175, 55, 0.1);
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .modal-overlay.show .modal {
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 25px;
+            background: linear-gradient(90deg, #d4af37, #c9a227);
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h2 svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-close svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .modal-body {
+            padding: 30px 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #d4af37;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group label .required {
+            color: #ff4757;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            background: #1a1a1a;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #666666;
+        }
+
+        .form-group input:hover,
+        .form-group textarea:hover {
+            border-color: #444444;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 0 25px 25px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            border: none;
+            color: #000000;
+            min-width: 150px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #333333;
+            color: #ffffff;
+            min-width: 120px;
+        }
+
+        .btn-secondary:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .modal {
+                max-width: 100%;
+                margin: 10px;
+            }
+
+            .modal-header {
+                padding: 18px 20px;
+            }
+
+            .modal-header h2 {
+                font-size: 16px;
+            }
+
+            .modal-body {
+                padding: 25px 20px;
+            }
+
+            .modal-footer {
+                padding: 0 20px 20px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 25px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .search-input {
+            width: 300px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #666666;
+        }
+
+        .search-input:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .email-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .email-text {
+            color: #cccccc;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #2ed573;
+            font-weight: 500;
+        }
+
+        .verified-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .lock-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(46, 213, 115, 0.15);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2ed573;
+        }
+
+        .lock-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-brand">
+                <div class="navbar-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                        <polyline points="2 17 12 22 22 17" />
+                        <polyline points="2 12 12 17 22 12" />
+                    </svg>
+                </div>
+                <span class="navbar-title">Correspondent Portal</span>
+            </div>
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                    </svg>Dashboard</a>
+                <a href="correspondent-applications.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>Applications</a>
+                <a href="approval-queue.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polyline points="9 11 12 14 22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>Approval Queue</a>
+                <a href="blocked-domains-list.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                    </svg>Blocked Domains</a>
+                <div class="nav-dropdown">
+                    <a href="javascript:void(0)" class="nav-link active" onclick="toggleNavDropdown(event)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                        </svg>
+                        Users
+                        <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </a>
+                    <div class="nav-dropdown-menu" id="usersDropdown">
+                        <a href="clients-users-list.html" class="nav-dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                            </svg>
+                            Clients
+                        </a>
+                        <a href="supervisors-list.html" class="nav-dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                            </svg>
+                            Supervisor
+                        </a>
+                        <a href="reps-list.html" class="nav-dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                            </svg>
+                            Register Reps
+                        </a>
+                        <a href="traders-list.html" class="nav-dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                            </svg>
+                            Traders
+                        </a>
+                    </div>
+                </div>
+                <a href="correspondent-alerttypes.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>Alert Types</a>
+                <a href="correspondent-documents-list.html" class="nav-link"><svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>Documents</a>
+            </div>
+        </div>
+         <div class="navbar-user">
+            <div class="user-profile-wrapper">
+                <div class="user-profile" onclick="toggleUserDropdown()">
+                    <div class="user-avatar">A</div>
+                    <span class="user-name">AA Securities</span>
+                    <svg class="user-dropdown-icon" id="userDropdownIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                </div>
+                <div class="user-dropdown-menu" id="userDropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-name">AA Securities</div>
+                        <div class="dropdown-role">Administrator</div>
+                    </div>
+                    <a href="profile.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        My Profile
+                    </a>
+                    <a href="settings.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        Settings
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout" id="logoutDropdown">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                    </button>
+                </div>
+            </div>
+            <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg></button>
+            <button class="icon-btn" id="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg></button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                </svg>
+                Supervisors
+            </h1>
+            <button class="btn-create" onclick="openCreateModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Create Supervisor
+            </button>
+        </div>
+        <div class="content-card">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search here" id="searchInput">
+                <button class="btn btn-primary" onclick="searchUsers()">Search</button>
+                <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Lock / Unlock</th>
+                            <th>Is Default</th>
+                            <th>Created Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>umer</td>
+                            <td>test</td>
+                            <td>umertest</td>
+                            <td>
+                                <div class="email-cell">
+                                    <span class="email-text">umer.n@pacsquare.com</span>
+                                    <span class="verified-badge">
+                                        Verified
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                            <polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="currentColor"
+                                                stroke-width="2" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lock-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                </div>
+                            </td>
+                            <td>Yes</td>
+                            <td>Mon Dec 29 2025</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="action-btn" onclick="toggleDropdown(this)">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9" />
+                                        </svg>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <button class="dropdown-item" onclick="openEditModal()">Edit</button>
+                                        <button class="dropdown-item" onclick="openLockSuccessModal()">Lock</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Test</td>
+                            <td>Person</td>
+                            <td>Testperson</td>
+                            <td>
+                                <div class="email-cell">
+                                    <span class="email-text">testperson@yopmail.com</span>
+                                    <span class="verified-badge">
+                                        Verified
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                            <polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="currentColor"
+                                                stroke-width="2" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lock-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                </div>
+                            </td>
+                            <td>No</td>
+                            <td>Mon Dec 29 2025</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="action-btn" onclick="toggleDropdown(this)">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9" />
+                                        </svg>
+                                    </button>
+                                   <div class="dropdown-menu">
+                                        <button class="dropdown-item" onclick="openEditModal()">Edit</button>
+                                        <button class="dropdown-item" onclick="openLockSuccessModal()">Lock</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Android</td>
+                            <td>Test</td>
+                            <td>androidtest</td>
+                            <td>
+                                <div class="email-cell">
+                                    <span class="email-text">androidtest@yopmail.com</span>
+                                    <span class="verified-badge">
+                                        Verified
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                            <polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="currentColor"
+                                                stroke-width="2" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lock-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                </div>
+                            </td>
+                                    <td>No</td>
+                            <td>Tue Oct 07 2025</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="action-btn" onclick="toggleDropdown(this)">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9" />
+                                        </svg>
+                                    </button>
+                                   <div class="dropdown-menu">
+                                        <button class="dropdown-item" onclick="openEditModal()">Edit</button>
+                                        <button class="dropdown-item" onclick="openLockSuccessModal()">Lock</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-pagination">
+                <div class="pagination-info">
+                    Rows per page:
+                    <select class="pagination-select">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span>1-4 of 4</span>
+                </div>
+                <div class="pagination-buttons">
+                    <button class="pagination-btn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="11 17 6 12 11 7" />
+                            <polyline points="18 17 13 12 18 7" />
+                        </svg></button>
+                    <button class="pagination-btn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg></button>
+                    <button class="pagination-btn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg></button>
+                    <button class="pagination-btn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="13 17 18 12 13 7" />
+                            <polyline points="6 17 11 12 6 7" />
+                        </svg></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" style="max-width: 650px;">
+            <div class="modal-header">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                    </svg>
+                    Create Supervisor
+                </h2>
+                <button type="button" class="modal-close" id="modalCloseBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="pointer-events: none;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-row" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="username" placeholder="Enter username">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="Enter email address">
+                    </div>
+
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="firstname" placeholder="Enter first name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="lastname" placeholder="Enter last name">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" id="modalCancelBtn">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="modalSubmitBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal" style="max-width: 650px;">
+            <div class="modal-header">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Edit Supervisor
+                </h2>
+                <button type="button" class="modal-close" id="editModalCloseBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="pointer-events: none;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-row" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="editUsername" placeholder="Enter username">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="editEmail" placeholder="Enter email address">
+                    </div>
+
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="editFirstname" placeholder="Enter first name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="editLastname" placeholder="Enter last name">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" id="editModalCancelBtn">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="editModalSubmitBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Update
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="lockSuccessModalOverlay">
+        <div class="modal" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Success
+                </h2>
+                <button type="button" class="modal-close" id="lockSuccessCloseBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="pointer-events: none;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body" style="text-align: center; padding: 40px 25px;">
+                <div
+                    style="width: 70px; height: 70px; background: rgba(39, 174, 96, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="width: 35px; height: 35px;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h3 style="color: #ffffff; font-size: 18px; margin-bottom: 10px;">User Locked Successfully</h3>
+                <p style="color: #888888; font-size: 14px; line-height: 1.6;">The user account has been locked and they
+                    will no longer be able to access the system.</p>
+            </div>
+
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: center; padding-bottom: 30px;">
+                <button type="button" class="btn btn-primary" id="lockSuccessOkBtn">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleNavDropdown(e) {
+            e.preventDefault();
+            document.getElementById('usersDropdown').classList.toggle('show');
+        }
+        function toggleDropdown(btn) {
+            document.querySelectorAll('.dropdown-menu:not(.nav-dropdown-menu)').forEach(menu => {
+                if (menu !== btn.nextElementSibling) menu.classList.remove('show');
+            });
+            btn.nextElementSibling.classList.toggle('show');
+        }
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.dropdown') && !e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.dropdown-menu:not(.nav-dropdown-menu)').forEach(menu => menu.classList.remove('show'));
+            }
+        });
+        function openCreateModal() { alert('Opening Create Client modal...'); }
+        function searchUsers() {
+            const searchValue = document.getElementById('searchInput').value;
+            if (searchValue) alert('Searching for: ' + searchValue);
+        }
+        function clearSearch() { document.getElementById('searchInput').value = ''; }
+        const logOut = document.getElementById('logout');
+        logOut.addEventListener('click', function (e) {
+            window.location.href = '/Accounts/login.html'
+        });
+        // Modal Functions
+        (function () {
+            var modalOverlay = document.getElementById('modalOverlay');
+            var modalCloseBtn = document.getElementById('modalCloseBtn');
+            var modalCancelBtn = document.getElementById('modalCancelBtn');
+            var modalSubmitBtn = document.getElementById('modalSubmitBtn');
+
+            // Open Modal
+            window.openCreateModal = function () {
+                modalOverlay.classList.remove('closing');
+                modalOverlay.classList.add('show');
+                // Clear form fields
+                document.getElementById('domainUrl').value = '';
+                document.getElementById('reason').value = '';
+            };
+
+            // Close Modal
+            function closeModal() {
+                modalOverlay.classList.add('closing');
+                setTimeout(function () {
+                    modalOverlay.classList.remove('show');
+                    modalOverlay.classList.remove('closing');
+                }, 300);
+            }
+
+            // Close button click
+            modalCloseBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeModal();
+            });
+
+            // Cancel button click
+            modalCancelBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeModal();
+            });
+
+            // Submit button click
+            modalSubmitBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var domainUrl = document.getElementById('domainUrl').value.trim();
+                var reason = document.getElementById('reason').value.trim();
+
+                if (!domainUrl) {
+                    alert('Please enter a domain URL');
+                    document.getElementById('domainUrl').focus();
+                    return;
+                }
+
+                alert('Blocked domain created successfully!\n\nDomain URL: ' + domainUrl + '\nReason: ' + (reason || 'N/A'));
+                closeModal();
+            });
+
+            // Click outside modal to close
+            modalOverlay.addEventListener('click', function (e) {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+
+            // Escape key to close
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && modalOverlay.classList.contains('show')) {
+                    closeModal();
+                }
+            });
+
+            //
+            // Edit Modal Elements
+            var editModalOverlay = document.getElementById('editModalOverlay');
+            var editModalCloseBtn = document.getElementById('editModalCloseBtn');
+            var editModalCancelBtn = document.getElementById('editModalCancelBtn');
+            var editModalSubmitBtn = document.getElementById('editModalSubmitBtn');
+
+            // Lock Success Modal Elements
+            var lockSuccessModalOverlay = document.getElementById('lockSuccessModalOverlay');
+            var lockSuccessCloseBtn = document.getElementById('lockSuccessCloseBtn');
+            var lockSuccessOkBtn = document.getElementById('lockSuccessOkBtn');
+
+            // Open Edit Modal
+            window.openEditModal = function (username, email, firstname, lastname) {
+                editModalOverlay.classList.remove('closing');
+                editModalOverlay.classList.add('show');
+                // Populate form fields
+                document.getElementById('editUsername').value = username || '';
+                document.getElementById('editEmail').value = email || '';
+                document.getElementById('editFirstname').value = firstname || '';
+                document.getElementById('editLastname').value = lastname || '';
+            };
+
+            // Close Edit Modal
+            function closeEditModal() {
+                editModalOverlay.classList.add('closing');
+                setTimeout(function () {
+                    editModalOverlay.classList.remove('show');
+                    editModalOverlay.classList.remove('closing');
+                }, 300);
+            }
+
+            // Edit Modal - Close button
+            editModalCloseBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeEditModal();
+            });
+
+            // Edit Modal - Cancel button
+            editModalCancelBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeEditModal();
+            });
+
+            // Edit Modal - Submit button
+            editModalSubmitBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var username = document.getElementById('editUsername').value.trim();
+                var email = document.getElementById('editEmail').value.trim();
+
+                if (!username) {
+                    alert('Please enter a username');
+                    document.getElementById('editUsername').focus();
+                    return;
+                }
+
+                if (!email) {
+                    alert('Please enter an email');
+                    document.getElementById('editEmail').focus();
+                    return;
+                }
+
+                alert('Client updated successfully!');
+                closeEditModal();
+            });
+
+            // Edit Modal - Click outside to close
+            editModalOverlay.addEventListener('click', function (e) {
+                if (e.target === editModalOverlay) {
+                    closeEditModal();
+                }
+            });
+
+            // Open Lock Success Modal
+            window.openLockSuccessModal = function () {
+                lockSuccessModalOverlay.classList.remove('closing');
+                lockSuccessModalOverlay.classList.add('show');
+            };
+
+            // Close Lock Success Modal
+            function closeLockSuccessModal() {
+                lockSuccessModalOverlay.classList.add('closing');
+                setTimeout(function () {
+                    lockSuccessModalOverlay.classList.remove('show');
+                    lockSuccessModalOverlay.classList.remove('closing');
+                }, 300);
+            }
+
+            // Lock Success Modal - Close button
+            lockSuccessCloseBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeLockSuccessModal();
+            });
+
+            // Lock Success Modal - OK button
+            lockSuccessOkBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeLockSuccessModal();
+            });
+
+            // Lock Success Modal - Click outside to close
+            lockSuccessModalOverlay.addEventListener('click', function (e) {
+                if (e.target === lockSuccessModalOverlay) {
+                    closeLockSuccessModal();
+                }
+            });
+
+            // Escape key to close any open modal
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    if (editModalOverlay.classList.contains('show')) {
+                        closeEditModal();
+                    }
+                    if (lockSuccessModalOverlay.classList.contains('show')) {
+                        closeLockSuccessModal();
+                    }
+                }
+            });
+        })();
+
+        function toggleNavDropdown(e) {
+            e.preventDefault();
+            document.getElementById('usersDropdown').classList.toggle('show');
+        }
+        function toggleDropdown(btn) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu !== btn.nextElementSibling) menu.classList.remove('show');
+            });
+            btn.nextElementSibling.classList.toggle('show');
+        }
+         // User Dropdown Toggle
+        function toggleUserDropdown() {
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            const dropdownIcon = document.getElementById('userDropdownIcon');
+
+            dropdownMenu.classList.toggle('show');
+            dropdownIcon.classList.toggle('rotated');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const userProfileWrapper = document.querySelector('.user-profile-wrapper');
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            const dropdownIcon = document.getElementById('userDropdownIcon');
+
+            if (userProfileWrapper && !userProfileWrapper.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+            }
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal - Review Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+            color: #ffffff;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border-bottom: 1px solid #2a2a2a;
+            padding: 0 30px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #d4af37, #f4e4bc);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar-logo svg {
+            width: 24px;
+            height: 24px;
+            color: #000000;
+        }
+
+        .navbar-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #d4af37, #f4e4bc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .user-dropdown {
+            color: #d4af37;
+            transition: transform 0.3s ease;
+        }
+
+        .user-dropdown.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* User Profile Dropdown Container */
+        .user-profile-wrapper {
+            position: relative;
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+            animation: dropdownSlide 0.2s ease;
+        }
+
+        .user-dropdown-menu.show {
+            display: block;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            color: #d4af37;
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            min-width: 200px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 200;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #d4af37, #f4e4bc, #d4af37);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .dropdown-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-header .dropdown-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0a0a0a;
+        }
+
+        .dropdown-header .dropdown-role {
+            font-size: 12px;
+            color: #0a0a0a;
+            margin-top: 2px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            font-size: 14px;
+            color: #333333;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #c9a227;
+        }
+
+        .dropdown-item svg {
+            width: 18px;
+            height: 18px;
+            color: #888888;
+        }
+
+        .dropdown-item:hover svg {
+            color: #c9a227;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 5px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ff4757;
+        }
+
+        .dropdown-item.logout:hover {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        .dropdown-item.logout svg {
+            color: #ff4757;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            color: #d4af37;
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 14px;
+            color: #0a0a0a;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .dropdown-item:last-child {
+            border-radius: 0 0 12px 12px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+
+        .dropdown-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Step Wizard */
+        .step-wizard {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .step-wizard::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .step-wizard::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .step-wizard::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 3px;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 20px;
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            min-width: 110px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .step-item:hover {
+            border-color: #d4af37;
+            transform: translateY(-3px);
+        }
+
+        .step-item.active {
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            border-color: #d4af37;
+        }
+
+        .step-item.active .step-icon {
+            background: rgba(0, 0, 0, 0.2);
+            color: #000000;
+        }
+
+        .step-item.active .step-label {
+            color: #000000;
+        }
+
+        .step-item.previous {
+            background: linear-gradient(135deg, #333333 0%, #2a2a2a 100%);
+        }
+
+        .step-item.previous .step-icon {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .step-item.previous .step-label {
+            color: #ffffff;
+        }
+
+        .step-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            transition: all 0.3s ease;
+        }
+
+        .step-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .step-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888888;
+            text-align: center;
+            line-height: 1.3;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.save-continue {
+            background: linear-gradient(135deg, #2ed573 0%, #26ab5f 100%);
+            border-color: #2ed573;
+        }
+
+        .step-item.save-continue .step-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .step-item.save-continue .step-label {
+            color: #ffffff;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 25px 30px;
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 15px;
+        }
+
+        .page-header-content h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        .page-header-content p {
+            font-size: 14px;
+            color: #888888;
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            border: none;
+            color: #000000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+        }
+
+        .btn-outline:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #2ed573 0%, #26ab5f 100%);
+            border: none;
+            color: #ffffff;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46, 213, 115, 0.3);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Review Section Card */
+        .review-section {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .review-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 25px;
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+            border-bottom: 1px solid #2a2a2a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .review-section-header:hover {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+        }
+
+        .review-section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .review-section-title .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+        }
+
+        .review-section-title .icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .review-section-title h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .review-section-title span {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .review-section-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .edit-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 6px;
+            color: #d4af37;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .edit-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .edit-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .collapse-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            transition: transform 0.3s ease;
+        }
+
+        .collapse-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .review-section.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .review-section-body {
+            padding: 25px;
+            display: block;
+        }
+
+        .review-section.collapsed .review-section-body {
+            display: none;
+        }
+
+        /* Review Data Grid */
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .review-item {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .review-item:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .review-item label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .review-item .value {
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .review-item .value.highlight {
+            color: #2ed573;
+        }
+
+        /* Checkbox Review Item */
+        .review-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .review-checkbox-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .review-checkbox-item .check-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #2ed573, #26ab5f);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+
+        .review-checkbox-item .check-icon.unchecked {
+            background: #333333;
+            color: #666666;
+        }
+
+        .review-checkbox-item .check-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .review-checkbox-item span {
+            font-size: 13px;
+            color: #cccccc;
+        }
+
+        /* Toggle Badge */
+        .toggle-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .toggle-badge.yes {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+        }
+
+        .toggle-badge.no {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+        }
+
+        /* Document Card */
+        .document-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .document-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .document-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+        }
+
+        .document-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .document-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .document-info p {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        /* Signature Preview */
+        .signature-preview {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .signature-image {
+            width: 200px;
+            height: 100px;
+            background: #ffffff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .signature-image img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .signature-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .signature-details p {
+            font-size: 13px;
+            color: #888888;
+        }
+
+        .signature-details p strong {
+            color: #ffffff;
+        }
+
+        /* Signed Agreement Item */
+        .signed-agreement-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: rgba(46, 213, 115, 0.05);
+            border: 1px solid rgba(46, 213, 115, 0.2);
+            border-left: 3px solid #2ed573;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .signed-agreement-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .signed-agreement-item svg {
+            width: 18px;
+            height: 18px;
+            color: #2ed573;
+        }
+
+        .signed-agreement-item span {
+            font-size: 13px;
+            color: #2ed573;
+            font-weight: 500;
+        }
+
+        /* Sub Section */
+        .sub-section {
+            margin-bottom: 25px;
+        }
+
+        .sub-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sub-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #d4af37;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-section-title svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .review-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .review-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .page-header-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .step-item {
+                min-width: 80px;
+                padding: 12px 10px;
+            }
+
+            .step-icon {
+                width: 36px;
+                height: 36px;
+            }
+
+            .step-icon svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .step-label {
+                font-size: 9px;
+            }
+
+            .review-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .signature-preview {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="navbar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </div>
+            <span class="navbar-title" onclick="redirectToDashboard()">Client Portal</span>
+        </div>
+
+        <div class="navbar-user">
+            <div class="user-profile-wrapper">
+                <div class="user-profile" id="userProfileBtn" onclick="toggleUserDropdown()">
+                    <div class="user-avatar">D</div>
+                    <span class="user-name">Demo Client</span>
+                    <svg class="user-dropdown" id="userDropdownIcon" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="user-dropdown-menu" id="userDropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-name">Demo Client</div>
+                        <div class="dropdown-role">Applicant</div>
+                    </div>
+                    <a href="javascript:;" class="dropdown-item" onclick="redirectToProfile()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Profile
+                    </a>
+                    <a href="javascript:;" class="dropdown-item" onclick="redirectToChangePassword()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Change Password
+                    </a>
+
+                </div>
+            </div>
+            <button class="icon-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </button>
+            <button class="icon-btn" id="logout" onclick="handleLogout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Step Wizard -->
+        <div class="step-wizard">
+            <a href="#" class="step-item previous">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="11 17 6 12 11 7"></polyline>
+                        <polyline points="18 17 13 12 18 7"></polyline>
+                    </svg>
+                </div>
+                <span class="step-label">Previous</span>
+            </a>
+
+            <a href="account-information.html" class="step-item">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <span class="step-label">Account<br>Information</span>
+            </a>
+
+            <a href="personal-information.html" class="step-item">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <span class="step-label">Personal<br>Information</span>
+            </a>
+
+            <a href="employment-information.html" class="step-item">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                </div>
+                <span class="step-label">Employment<br>Information</span>
+            </a>
+
+            <a href="investment-profile.html" class="step-item">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                </div>
+                <span class="step-label">Investment<br>Profile</span>
+            </a>
+
+            <a href="regulatory-items.html" class="step-item"">
+                <div class=" step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+        </div>
+        <span class="step-label">Regulatory<br>Items</span>
+        </a>
+
+        <a href="account-features.html" class="step-item">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+            </div>
+            <span class="step-label">Account<br>Features</span>
+        </a>
+
+        <a href="document-upload.html" class="step-item">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+            </div>
+            <span class="step-label">Document<br>Upload</span>
+        </a>
+
+        <a href="disclosures-signatures.html" class="step-item">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="M9 12l2 2 4-4"></path>
+                </svg>
+            </div>
+            <span class="step-label">Disclosures &<br>Signatures</span>
+        </a>
+
+        <a href="confirms-statements.html" class="step-item">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+            </div>
+            <span class="step-label">Confirms and<br>Statements</span>
+        </a>
+
+        <a href="review.html" class="step-item active">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+            </div>
+            <span class="step-label">Review</span>
+        </a>
+
+        <a href="#" class="step-item save-continue">
+            <div class="step-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="13 17 18 12 13 7"></polyline>
+                    <polyline points="6 17 11 12 6 7"></polyline>
+                </svg>
+            </div>
+            <span class="step-label">Save &<br>Continue</span>
+        </a>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <h1>Review Your Application</h1>
+                <p>Please review all information carefully before submitting your application</p>
+            </div>
+            <div class="page-header-actions">
+                <button class="btn btn-outline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Print
+                </button>
+                <button class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download PDF
+                </button>
+                <button class="btn btn-submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Submit Application
+                </button>
+            </div>
+        </div>
+
+        <!-- Account Information Section -->
+        <div class="review-section" id="accountInfo">
+            <div class="review-section-header" onclick="toggleSection('accountInfo')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Account Information</h3>
+                        <span>Basic account details</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="review-grid">
+                    <div class="review-item">
+                        <label>Company</label>
+                        <div class="value">ABC Financial</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Correspondent</label>
+                        <div class="value">XEND</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Office</label>
+                        <div class="value">XEND OFF</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Account Type</label>
+                        <div class="value">Cash</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Account Sub Type</label>
+                        <div class="value">Cash Customer</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Legal Entity</label>
+                        <div class="value">Individual</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Roll Up Account</label>
+                        <div class="value">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Information Section -->
+        <div class="review-section" id="personalInfo">
+            <div class="review-section-header" onclick="toggleSection('personalInfo')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Personal Information</h3>
+                        <span>Your personal details and contact information</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Basic Information
+                    </div>
+                    <div class="review-grid">
+                        <div class="review-item">
+                            <label>First Name</label>
+                            <div class="value">William</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Middle Name</label>
+                            <div class="value">-</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Last Name</label>
+                            <div class="value">Blake</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Date of Birth</label>
+                            <div class="value">05/05/1978</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Number of Dependents</label>
+                            <div class="value">3</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Marital Status</label>
+                            <div class="value">Married</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Email</label>
+                            <div class="value">william.mon@yopm</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Primary Telephone</label>
+                            <div class="value">214-799-6565</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Work Telephone</label>
+                            <div class="value">-</div>
+                        </div>
+                        <div class="review-item">
+                            <label>US Citizen</label>
+                            <div class="value"><span class="toggle-badge yes">Yes</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Tax Information
+                    </div>
+                    <div class="review-grid">
+                        <div class="review-item">
+                            <label>Citizenship Country</label>
+                            <div class="value">United States</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Tax Country</label>
+                            <div class="value">United States</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Tax ID Type</label>
+                            <div class="value">Tax Payer ID</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Tax ID Number</label>
+                            <div class="value">12-465656</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Tax Lot Method</label>
+                            <div class="value">Last In First Out</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Tax Rate</label>
+                            <div class="value">10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                            <circle cx="9" cy="10" r="2"></circle>
+                            <path d="M15 8h2"></path>
+                            <path d="M15 12h2"></path>
+                            <path d="M7 16h10"></path>
+                        </svg>
+                        Identification
+                    </div>
+                    <div class="review-grid">
+                        <div class="review-item">
+                            <label>ID Type</label>
+                            <div class="value">Military ID</div>
+                        </div>
+                        <div class="review-item">
+                            <label>ID Number</label>
+                            <div class="value">532122632</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Issue Date</label>
+                            <div class="value">02/02/2022</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Expiration Date</label>
+                            <div class="value">02/02/2032</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Account at Other Firm</label>
+                            <div class="value"><span class="toggle-badge yes">Yes</span></div>
+                        </div>
+                        <div class="review-item">
+                            <label>Employee of Firm</label>
+                            <div class="value"><span class="toggle-badge yes">Yes</span></div>
+                        </div>
+                        <div class="review-item">
+                            <label>Officer of Firm</label>
+                            <div class="value"><span class="toggle-badge yes">Yes</span></div>
+                        </div>
+                        <div class="review-item">
+                            <label>Currency</label>
+                            <div class="value">United States - USD</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Physical Address
+                    </div>
+                    <div class="review-grid">
+                        <div class="review-item">
+                            <label>Address Line 1</label>
+                            <div class="value">123 Main St</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Address Line 2</label>
+                            <div class="value">Unit 42</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Country</label>
+                            <div class="value">United States</div>
+                        </div>
+                        <div class="review-item">
+                            <label>State</label>
+                            <div class="value">Indiana</div>
+                        </div>
+                        <div class="review-item">
+                            <label>City</label>
+                            <div class="value">Paoli</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Postal Code</label>
+                            <div class="value">46001</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employment Information Section -->
+        <div class="review-section" id="employmentInfo">
+            <div class="review-section-header" onclick="toggleSection('employmentInfo')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Employment Information</h3>
+                        <span>Your employment status and details</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="review-item" style="margin-bottom: 20px; max-width: 200px;">
+                    <label>Employment Status</label>
+                    <div class="value highlight">Employed</div>
+                </div>
+                <div class="review-grid">
+                    <div class="review-item">
+                        <label>Employer</label>
+                        <div class="value">Xavor Tech</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Years Employed</label>
+                        <div class="value">15</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Position</label>
+                        <div class="value">Senior Programme</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Address Line 1</label>
+                        <div class="value">123 Main St</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Address Line 2</label>
+                        <div class="value">Unit 42</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Country</label>
+                        <div class="value">United States</div>
+                    </div>
+                    <div class="review-item">
+                        <label>State</label>
+                        <div class="value">Indiana</div>
+                    </div>
+                    <div class="review-item">
+                        <label>City</label>
+                        <div class="value">Paoli</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Zip Code</label>
+                        <div class="value">46001</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Type of Business</label>
+                        <div class="value">IT</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Profile Section -->
+        <div class="review-section" id="investmentProfile">
+            <div class="review-section-header" onclick="toggleSection('investmentProfile')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Investment Profile</h3>
+                        <span>Your investment objectives and experience</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Investment Profile
+                    </div>
+                    <div class="review-grid">
+                        <div class="review-item">
+                            <label>Advisor Name</label>
+                            <div class="value">-</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Investment Objective</label>
+                            <div class="value">Capital Gains</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Investment Experience</label>
+                            <div class="value">Good (3 to 5 years)</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Risk Level</label>
+                            <div class="value">Medium</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Time Horizon</label>
+                            <div class="value">Less than 3 years</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Tax Bracket</label>
+                            <div class="value">10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        Financial Suitability
+                    </div>
+                    <div class="review-grid">
+                        <div class="review-item">
+                            <label>Annual Income</label>
+                            <div class="value">$50,001-100,000</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Total Net Worth</label>
+                            <div class="value">$25,000-50,000</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Liquid Net Worth</label>
+                            <div class="value">$25,000-50,000</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Liquidity Needs</label>
+                            <div class="value"><span class="toggle-badge yes">Yes</span></div>
+                        </div>
+                        <div class="review-item">
+                            <label>Money Market Sweep</label>
+                            <div class="value"><span class="toggle-badge yes">Yes</span></div>
+                        </div>
+                        <div class="review-item">
+                            <label>Option Level</label>
+                            <div class="value">Covered Calls</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                        Prior Investment Experience
+                    </div>
+                    <div class="review-grid">
+                        <div class="review-item">
+                            <label>Stock (Years)</label>
+                            <div class="value">10-14</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Options (Years)</label>
+                            <div class="value">1-4</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Mutual Funds (Years)</label>
+                            <div class="value">1-4</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Margin Account (Years)</label>
+                            <div class="value">1-4</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Municipal Bonds (Years)</label>
+                            <div class="value">1-4</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Commodities / Futures (Years)</label>
+                            <div class="value">1-4</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Government Bonds (Years)</label>
+                            <div class="value">0 / None</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Corporate Bonds (Years)</label>
+                            <div class="value">0 / None</div>
+                        </div>
+                        <div class="review-item">
+                            <label>Tax Shelters (Years)</label>
+                            <div class="value">0 / None</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regulatory Items Section -->
+        <div class="review-section" id="regulatoryItems">
+            <div class="review-section-header" onclick="toggleSection('regulatoryItems')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Regulatory Items</h3>
+                        <span>Compliance and regulatory questions</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="review-checkbox-item">
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>Senior executive or shareholder owning 10% or more of a publicly traded company</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>Family member employed by stock exchange or FINRA-registered broker-dealer</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>Senior Political Figure (SPF) or Politically Exposed Person (PEP)</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>Account held on behalf of a foreign financial institution</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>Account with a foreign bank operating outside the United States</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>Authorized third party to trade on your behalf</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon unchecked">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <span>Business owned or controlled by a broker</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon unchecked">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <span>Account for a foreign shell bank</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Features Section -->
+        <div class="review-section" id="accountFeatures">
+            <div class="review-section-header" onclick="toggleSection('accountFeatures')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Account Features</h3>
+                        <span>Selected account features and options</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="review-checkbox-item">
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>E-Documents</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon unchecked">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <span>Add margin to account</span>
+                </div>
+                <div class="review-checkbox-item">
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>Fully Paid Securities Lending</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Upload Section -->
+        <div class="review-section" id="documentUpload">
+            <div class="review-section-header" onclick="toggleSection('documentUpload')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Document Upload</h3>
+                        <span>Uploaded identification documents</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="document-card">
+                    <div class="document-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                    <div class="document-info">
+                        <h4>Military_ID - Primary</h4>
+                        <p>Front.jpg - Uploaded successfully</p>
+                    </div>
+                </div>
+                <div class="document-card">
+                    <div class="document-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                    <div class="document-info">
+                        <h4>Military_ID - Back</h4>
+                        <p>Back.jpg - Uploaded successfully</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclosures & Signatures Section -->
+        <div class="review-section" id="disclosuresSignatures">
+            <div class="review-section-header" onclick="toggleSection('disclosuresSignatures')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="M9 12l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Disclosures & Signatures</h3>
+                        <span>Signed agreements and your signature</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Signed Agreements
+                    </div>
+                    <div class="signed-agreement-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Account Agreement</span>
+                    </div>
+                    <div class="signed-agreement-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Fully Paid Securities Loan Agreement</span>
+                    </div>
+                    <div class="signed-agreement-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Exhibit B Agreement for NYSE Market Data</span>
+                    </div>
+                </div>
+
+                <div class="sub-section">
+                    <div class="sub-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                        </svg>
+                        Primary Signature
+                    </div>
+                    <div class="signature-preview">
+                        <div class="signature-image">
+                            <svg viewBox="0 0 200 100" fill="none" stroke="#000" stroke-width="2">
+                                <path d="M20 60 Q 40 20, 80 40 T 140 50 Q 160 30, 180 60" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="signature-details">
+                            <p><strong>Name:</strong> William Blake</p>
+                            <p><strong>Date:</strong> 12/01/2026</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirms and Statements Section -->
+        <div class="review-section" id="confirmsStatements">
+            <div class="review-section-header" onclick="toggleSection('confirmsStatements')">
+                <div class="review-section-title">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Confirms and Statements</h3>
+                        <span>Delivery preferences for confirmations and statements</span>
+                    </div>
+                </div>
+                <div class="review-section-actions">
+                    <button class="edit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <div class="collapse-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="review-section-body">
+                <div class="review-grid" style="max-width: 500px;">
+                    <div class="review-item">
+                        <label>Confirms Delivery Type</label>
+                        <div class="value">Email</div>
+                    </div>
+                    <div class="review-item">
+                        <label>Statements Delivery Type</label>
+                        <div class="value">Email</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Submit Actions -->
+        <div class="page-header" style="margin-top: 30px;">
+            <div class="page-header-content">
+                <h1 style="font-size: 18px;">Ready to Submit?</h1>
+                <p>Please ensure all information is accurate before submitting your application</p>
+            </div>
+            <div class="page-header-actions">
+                <button class="btn btn-outline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="11 17 6 12 11 7"></polyline>
+                        <polyline points="18 17 13 12 18 7"></polyline>
+                    </svg>
+                    Go Back
+                </button>
+                <button class="btn btn-submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Submit Application
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle section collapse
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+
+        // Step wizard click handling
+        // document.querySelectorAll('.step-item').forEach(item => {
+        //     item.addEventListener('click', function (e) {
+        //         e.preventDefault();
+        //         if (this.classList.contains('save-continue')) {
+        //             alert('Submitting application...');
+        //         } else if (this.classList.contains('previous')) {
+        //             alert('Going to previous step...');
+        //         }
+        //     });
+        // });
+
+        // Edit button handling
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const section = this.closest('.review-section').querySelector('.review-section-title h3').textContent;
+                alert('Navigating to edit: ' + section);
+            });
+        });
+
+        // Submit button handling
+        document.querySelectorAll('.btn-submit').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (confirm('Are you sure you want to submit your application?')) {
+                    alert('Application submitted successfully!');
+                }
+            });
+        });
+
+        const logOut = document.getElementById('logout');
+        userProfile.addEventListener('click', function () {
+            this.classList.toggle('active');
+            dropdownMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!userProfile.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                userProfile.classList.remove('active');
+                dropdownMenu.classList.remove('show');
+            }
+        });
+
+        // Dropdown items
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+            });
+        });
+
+        // Handle Logout
+        function handleLogout() {
+            window.location.href = '/accounts/login.html';
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const dropdownMenu = document.getElementById('userDropdownMenu');
+                const dropdownIcon = document.getElementById('userDropdownIcon');
+                dropdownMenu.classList.remove('show');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+
+        redirectToProfile = function () {
+            window.location.href = '/Applicant/profile.html';
+        }
+        redirectToChangePassword = function () {
+            window.location.href = '/Applicant/change-password.html';
+        }
+        // User Dropdown Toggle
+        function toggleUserDropdown() {
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            const dropdownIcon = document.getElementById('userDropdownIcon');
+
+            dropdownMenu.classList.toggle('show');
+            dropdownIcon.classList.toggle('rotated');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const userProfileWrapper = document.querySelector('.user-profile-wrapper');
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            const dropdownIcon = document.getElementById('userDropdownIcon');
+
+            if (userProfileWrapper && !userProfileWrapper.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+
+        function redirectToProfile() {
+            window.location.href = '/Applicant/profile.html';
+        }
+        function redirectToChangePassword() {
+            window.location.href = '/Applicant/change-password.html';
+        }
+        function redirectToDashboard() {
+            window.location.href = '/Applicant/applications-list.html';
+        }
+
+    </script>
+</body>
+
+</html>

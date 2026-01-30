@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Applications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+            color: #ffffff;
+            position: relative;
+        }
+
+        /* Subtle gold accent glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border-bottom: 1px solid #2a2a2a;
+            padding: 0 30px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #d4af37, #f4e4bc);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar-logo svg {
+            width: 24px;
+            height: 24px;
+            color: #000000;
+        }
+
+        .navbar-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            color: #888888;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .nav-item.active {
+            color: #d4af37;
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #d4af37, #f4e4bc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .user-dropdown {
+            color: #d4af37;
+            transition: transform 0.3s ease;
+        }
+
+        .user-dropdown.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* User Profile Dropdown Container */
+        .user-profile-wrapper {
+            position: relative;
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+            animation: dropdownSlide 0.2s ease;
+        }
+
+        .user-dropdown-menu.show {
+            display: block;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: capitalize;
+            margin-top: 25px;
+        }
+
+        .status-badge.not-completed {
+            background: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .status-badge.canceled {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .status-badge.approved {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .dropdown-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-header .dropdown-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .dropdown-header .dropdown-role {
+            font-size: 12px;
+            color: #888888;
+            margin-top: 2px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            font-size: 14px;
+            color: #333333;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #c9a227;
+        }
+
+        .dropdown-item svg {
+            width: 18px;
+            height: 18px;
+            color: #888888;
+        }
+
+        .dropdown-item:hover svg {
+            color: #c9a227;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 5px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ff4757;
+        }
+
+        .dropdown-item.logout:hover {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        .dropdown-item.logout svg {
+            color: #ff4757;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            color: #d4af37;
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(90deg, #d4af37, #c9a227);
+            border-radius: 15px 15px 0 0;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .btn-create {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #000000;
+            color: #d4af37;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-create:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-create svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Content Card */
+        .content-card {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            overflow: hidden;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .search-input {
+            width: 350px;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-family: inherit;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            background: #1a1a1a;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #666666;
+        }
+
+        .search-input:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .btn-search {
+            padding: 14px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search.primary {
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4bc 50%, #d4af37 100%);
+            background-size: 200% 200%;
+            color: #000000;
+        }
+
+        .btn-search.primary:hover {
+            background-position: 100% 0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-search.secondary {
+            background: #1a1a1a;
+            color: #ffffff;
+            border: 1px solid #333333;
+        }
+
+        .btn-search.secondary:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            text-align: left;
+            padding: 18px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(212, 175, 55, 0.08);
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        table td {
+            padding: 18px 20px;
+            font-size: 14px;
+            color: #cccccc;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .btn-edit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Action Button with Dropdown */
+        .action-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-action svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-action.active svg {
+            transform: rotate(180deg);
+        }
+
+        /* Action Dropdown Menu */
+        .action-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: linear-gradient(145deg, #1a1a1a 0%, #111111 100%);
+            border: 1px solid #333333;
+            border-radius: 10px;
+            min-width: 180px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+            animation: dropdownSlide 0.2s ease;
+        }
+
+        .action-dropdown.show {
+            display: block;
+        }
+
+        .action-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: #cccccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .action-dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+        }
+
+        .action-dropdown-item svg {
+            width: 18px;
+            height: 18px;
+            color: #888888;
+        }
+
+        .action-dropdown-item:hover svg {
+            color: #d4af37;
+        }
+
+        .action-dropdown-divider {
+            height: 1px;
+            background: #333333;
+            margin: 5px 0;
+        }
+
+
+        /* Pagination */
+        .table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 20px 25px;
+            border-top: 1px solid #2a2a2a;
+            background: rgba(0, 0, 0, 0.2);
+            gap: 20px;
+        }
+
+        .rows-per-page {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #888888;
+        }
+
+        .rows-per-page select {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .rows-per-page select:focus {
+            border-color: #d4af37;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: #888888;
+            margin-right: 10px;
+        }
+
+        .pagination-btn {
+            width: 34px;
+            height: 34px;
+            background: transparent;
+            border: 1px solid #333333;
+            border-radius: 6px;
+            color: #888888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-card {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(212, 175, 55, 0.05);
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+        }
+
+        @keyframes fadeOverlay {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(90deg, #d4af37, #c9a227);
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #000000;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-close svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .modal-body {
+            padding: 30px 25px;
+        }
+
+        .modal-body p {
+            font-size: 15px;
+            color: #cccccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-body .user-info {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-body .user-info p {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .modal-body .user-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-body .user-info strong {
+            color: #d4af37;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-modal {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-modal.primary {
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            color: #000000;
+        }
+
+        .btn-modal.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-modal.secondary {
+            background: #1a1a1a;
+            color: #ffffff;
+            border: 1px solid #333333;
+        }
+
+        .btn-modal.secondary:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .btn-modal.danger {
+            background: linear-gradient(135deg, #ff4757 0%, #ff3344 100%);
+            color: #ffffff;
+        }
+
+        .btn-modal.danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        /* Large Modal */
+        .modal-card.modal-large {
+            max-width: 1200px;
+            width: 95%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-card.modal-large .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .modal-card.modal-large .modal-header {
+            padding: 20px 25px;
+            flex-shrink: 0;
+        }
+
+        .modal-card.modal-large .modal-footer {
+            flex-shrink: 0;
+        }
+
+        /* Responsive for large modal */
+        @media (max-width: 768px) {
+            .modal-card.modal-large {
+                max-width: 100%;
+                width: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .navbar-menu {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .search-section {
+                flex-direction: column;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .table-footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .summary-header {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 15px 25px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .summary-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #d4af37;
+        }
+
+        .summary-table-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .summary-table thead {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+        }
+
+        .summary-table th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            white-space: nowrap;
+        }
+
+        .summary-table td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: #cccccc;
+            border-bottom: 1px solid #2a2a2a;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .summary-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Tabs Section */
+        .tabs-container {
+            margin-bottom: 25px;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #888888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            border-color: #d4af37;
+            color: #000000;
+        }
+
+        /* Log Cards */
+        .logs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .log-card {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-left: 4px solid #d4af37;
+            border-radius: 12px;
+            padding: 20px 25px;
+            transition: all 0.3s ease;
+        }
+
+        .log-card:hover {
+            border-color: #d4af37;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transform: translateX(5px);
+        }
+
+        .log-date {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #888888;
+            margin-bottom: 12px;
+        }
+
+        .log-date svg {
+            width: 16px;
+            height: 16px;
+            color: #d4af37;
+        }
+
+        .log-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .log-title svg {
+            width: 18px;
+            height: 18px;
+            color: #d4af37;
+        }
+
+        .log-description {
+            font-size: 13px;
+            color: #aaaaaa;
+            margin-bottom: 12px;
+            padding-left: 28px;
+        }
+
+        .log-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #888888;
+            padding-left: 28px;
+        }
+
+        .log-meta svg {
+            width: 14px;
+            height: 14px;
+            color: #666666;
+        }
+
+        .log-meta .author {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        /* File name style */
+        .file-name {
+            font-size: 13px;
+            color: #aaaaaa;
+            padding-left: 28px;
+            margin-bottom: 8px;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 28px;
+            margin-bottom: 8px;
+        }
+
+        .status-badge.failed {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .status-badge.success {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 165, 0, 0.15);
+            color: #ffa500;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+
+        /* Retry Button */
+        .retry-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            background: transparent;
+            border: 2px solid #2ed573;
+            border-radius: 8px;
+            color: #2ed573;
+            cursor: pointer;
+            margin-left: 28px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            background: rgba(46, 213, 115, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .retry-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Details Section */
+        .details-section {
+            background: #ffffff;
+            border-radius: 0 0 12px 12px;
+            margin-top: -10px;
+            overflow: hidden;
+        }
+
+        .detail-row {
+            padding: 15px 25px;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #888888;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #333333;
+            font-weight: 500;
+        }
+
+        /* Status colors */
+        .status-not-completed {
+            color: #36a2eb;
+        }
+
+        .status-approved {
+            color: #2ed573;
+        }
+
+        .status-pending {
+            color: #ffa500;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 40px 20px;
+            color: #888888;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .summary-table {
+                min-width: 900px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .tabs {
+                gap: 8px;
+            }
+
+            .tab-btn {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+
+            .log-card {
+                padding: 15px 20px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.col-1 {
+            grid-column: span 1;
+        }
+
+        .form-group.col-2 {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #d4af37;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group label .required {
+            color: #ff4757;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            background: #1a1a1a;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input::placeholder {
+            color: #666666;
+        }
+
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: #444444;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #d4af37;
+            background: #1f1f1f;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .form-group input.error,
+        .form-group select.error {
+            border-color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .form-group select option {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 10px;
+        }
+
+        .error-message {
+            display: none;
+            font-size: 12px;
+            color: #ff4757;
+            margin-top: 6px;
+            padding-left: 2px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-actions {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #2a2a2a;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: scale(1.05);
+        }
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 5px;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            min-width: 180px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            z-index: 50;
+            display: none;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: dropdownFade 0.2s ease;
+        }
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #cccccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+
+        .dropdown-item svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #333333;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="navbar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </div>
+            <span class="navbar-title">Admin Portal</span>
+        </div>
+
+        <div class="navbar-menu">
+            <a href="/Admin/dashboard.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Dashboard
+            </a>
+            <a href="/Admin/companies-list.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Companies
+            </a>
+            <a href="/Admin/correspondents-list.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+                Correspondents
+            </a>
+            <a href="/Admin/offices-list.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+                Offices
+            </a>
+            <a href="/Admin/applications-list.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Applications
+            </a>
+            <a href="/Admin/users-list.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Users
+            </a>
+            <a href="/Admin/emailtemplates-list.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Email Templates
+            </a>
+        </div>
+
+        <div class="navbar-user">
+            <div class="user-profile-wrapper">
+                <div class="user-profile" id="userProfileBtn" onclick="toggleUserDropdown()">
+                    <div class="user-avatar">S</div>
+                    <span class="user-name">Super Admin</span>
+                    <svg class="user-dropdown" id="userDropdownIcon" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="user-dropdown-menu" id="userDropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-name">Super Admin</div>
+                        <div class="dropdown-role">Administrator</div>
+                    </div>
+                    <a href="profile.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Profile
+                    </a>
+                    <a href="change-password.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Change Password
+                    </a>
+
+                </div>
+            </div>
+            <button class="icon-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </button>
+            <button class="icon-btn" id="logout" onclick="handleLogout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Applications</h1>
+        </div>
+
+        <div class="content-card">
+            <div class="search-section">
+                <input type="text" class="search-input" placeholder="Search here" id="searchInput">
+                <button class="btn-search primary">Search</button>
+                <button class="btn-search secondary">Clear</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Account Number</th>
+                            <th>Legal Entity</th>
+                            <th>Name</th>
+                            <th>Tax Id</th>
+                            <th>Citizenship</th>
+                            <th>IP Address</th>
+                            <th>Active Status</th>
+                            <th>Application Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TS-00001</td>
+                            <td>Individual<br />Cash Customer</td>
+                            <td>William Blake</td>
+                            <td>12-1234567</td>
+                            <td>US</td>
+                            <td>127.0.0.1</td>
+                            <td>Active</td>
+                            <td class="status-badge approved">Approved (Clearing Firm)</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="action-btn" onclick="toggleDropdown(this)"><svg viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9" />
+                                        </svg></button>
+                                    <div class="dropdown-menu">
+                                        <button class="dropdown-item" onclick="redirectToReview()"><svg
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>View Application</button>
+                                        <button class="dropdown-item" onclick="openModal('editModal')"><svg
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                            </svg>Summary</button>
+                                        <div class="dropdown-divider"></div>
+                                        <button class="dropdown-item" onclick="openModal('sendEmailModal')"><svg
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                <path d="M12 18v-6" />
+                                                <path d="M9 15h6" />
+                                            </svg>Change Status</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>BT-00511</td>
+                            <td>Entity<br />Cash Customer</td>
+                            <td>ABC Corporation</td>
+                            <td>12-1234567</td>
+                            <td>US</td>
+                            <td>127.0.0.1</td>
+                            <td>Active</td>
+                            <td class="status-badge approved">Approved (Clearing Firm)</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="action-btn" onclick="toggleDropdown(this)"><svg viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9" />
+                                        </svg></button>
+                                    <div class="dropdown-menu">
+                                        <button class="dropdown-item" onclick="redirectToReview()"><svg
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>View Application</button>
+                                        <button class="dropdown-item" onclick="openModal('editModal')"><svg
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                            </svg>Summary</button>
+                                        <div class="dropdown-divider"></div>
+                                        <button class="dropdown-item" onclick="openModal('sendEmailModal')"><svg
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                <path d="M12 18v-6" />
+                                                <path d="M9 15h6" />
+                                            </svg>Change Status</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <div class="rows-per-page">
+                    <span>Rows per page:</span>
+                    <select>
+                        <option>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                    </select>
+                </div>
+                <div class="pagination">
+                    <span class="pagination-info">1-2 of 2</span>
+                    <button class="pagination-btn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="11 17 6 12 11 7"></polyline>
+                            <polyline points="18 17 13 12 18 7"></polyline>
+                        </svg>
+                    </button>
+                    <button class="pagination-btn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="pagination-btn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="pagination-btn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="13 17 18 12 13 7"></polyline>
+                            <polyline points="6 17 11 12 6 7"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-card modal-large">
+            <div class="modal-header">
+                <h3>Application Summary</h3>
+                <button class="modal-close" onclick="closeModal('editModal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Main Content -->
+                <main class="main-content">
+                    <!-- Summary Section -->
+                    <section class="summary-section">
+                        <div class="summary-header">
+                            <h2>Summary</h2>
+                        </div>
+                        <div class="summary-table-container">
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>A/C Number</th>
+                                        <th>Name</th>
+                                        <th>Email Address</th>
+                                        <th>Status</th>
+                                        <th>Home Phone</th>
+                                        <th>Physical Address</th>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>Zip Code</th>
+                                        <th>Country</th>
+                                        <th>DOB</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>-</td>
+                                        <td>William Blake</td>
+                                        <td>william.mon@yopmail.com</td>
+                                        <td class="status-not-completed">Not Completed</td>
+                                        <td>214-799-6565</td>
+                                        <td>123 Main St, Unit 42</td>
+                                        <td>Paoli</td>
+                                        <td>Indiana</td>
+                                        <td>46001</td>
+                                        <td>United States</td>
+                                        <td>05/05/1978 00:00:00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Tabs -->
+                    <div class="tabs-container">
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab('alerts', this)">Application
+                                Alerts</button>
+                            <button class="tab-btn" onclick="switchTab('status-logs', this)">Application Status
+                                Logs</button>
+                            <button class="tab-btn" onclick="switchTab('assignment-logs', this)">Application Assignment
+                                Logs</button>
+                            <button class="tab-btn" onclick="switchTab('uploaded-files', this)">Uploaded Files</button>
+                            <button class="tab-btn" onclick="switchTab('plaid-logs', this)">Plaid Logs</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Application Alerts -->
+                    <div class="tab-content active" id="alerts">
+                        <div class="logs-container">
+                            <!-- Alert Card 1 -->
+                            <div class="log-card">
+                                <div class="log-date">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    Thu Jan 08 2026
+                                </div>
+                                <div class="log-title">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                                        </path>
+                                    </svg>
+                                    Account Approved (Clearing Firm)
+                                </div>
+                                <div class="log-description">
+                                    Account has been approved by clearing firm
+                                </div>
+                                <div class="log-meta">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    13:38 by <span class="author">Fintex Client</span>
+                                </div>
+                            </div>
+
+                            <!-- Alert Card 2 -->
+                            <div class="log-card">
+                                <div class="log-date">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    Tue Jan 06 2026
+                                </div>
+                                <div class="log-title">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                                        </path>
+                                    </svg>
+                                    Account Pending Review (RR)
+                                </div>
+                                <div class="log-description">
+                                    Account has been pending review by RR
+                                </div>
+                                <div class="log-meta">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    6:13 by <span class="author">Glendale Securities</span>
+                                </div>
+                            </div>
+
+                            <!-- Alert Card 3 -->
+                            <div class="log-card">
+                                <div class="log-date">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    Tue Jan 06 2026
+                                </div>
+                                <div class="log-title">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                                        </path>
+                                    </svg>
+                                    Account Pending Review (RR)
+                                </div>
+                                <div class="log-description">
+                                    Account has been pending review by RR
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Application Status Logs -->
+                    <div class="tab-content" id="status-logs">
+                        <div class="logs-container">
+                            <!-- Status Log Card 1 -->
+                            <div class="log-card">
+                                <div class="log-date">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    Thu Jan 08 2026
+                                </div>
+                                <div class="log-description"
+                                    style="padding-left: 0; margin-bottom: 8px; font-size: 14px; color: #ffffff;">
+                                    Approved (Clearing Firm)
+                                </div>
+                                <div class="log-meta" style="padding-left: 0;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    13:38 by <span class="author">Fintex Client</span>
+                                </div>
+                            </div>
+
+                            <!-- Status Log Card 2 -->
+                            <div class="log-card">
+                                <div class="log-date">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    Mon Jan 05 2026
+                                </div>
+                                <div class="log-description"
+                                    style="padding-left: 0; margin-bottom: 8px; font-size: 14px; color: #ffffff;">
+                                    Submitted Pending Approval
+                                </div>
+                                <div class="log-meta" style="padding-left: 0;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    7:34 by <span class="author">Fintex Client</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Application Assignment Logs -->
+                    <div class="tab-content" id="assignment-logs">
+                        <div class="empty-state">
+                            <p>No logs found</p>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Uploaded Files -->
+                    <div class="tab-content" id="uploaded-files">
+                        <div class="logs-container">
+                            <!-- Uploaded File Card -->
+                            <div class="log-card">
+                                <div class="log-date">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    Mon Jan 05 2026
+                                </div>
+                                <div class="log-title">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                                        </path>
+                                    </svg>
+                                    Military ID
+                                </div>
+                                <div class="file-name">
+                                    Front.jpg
+                                </div>
+                                <div class="log-meta" style="padding-left: 0;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    4:54
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Plaid Logs -->
+                    <div class="tab-content" id="plaid-logs">
+                        <div class="logs-container">
+                            <!-- Plaid Log Card -->
+                            <div class="log-card" style="border-radius: 12px 12px 0 0; margin-bottom: 0;">
+                                <div class="log-date">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    Thu Jan 08 2026
+                                </div>
+                                <div class="log-title">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                                        </path>
+                                    </svg>
+                                    Identity Verification
+                                </div>
+                                <span class="status-badge failed">Failed</span>
+                                <div class="log-meta" style="padding-left: 0; margin-top: 8px;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    13:29
+                                </div>
+                                <button class="retry-btn" onclick="retrySubmission()">
+                                    Retry submission
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Plaid Details Section -->
+                            <div class="details-section">
+                                <div class="detail-row">
+                                    <div class="detail-label">Id</div>
+                                    <div class="detail-value">idv_2EK4QisvMegPEQ</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Client_user_id</div>
+                                    <div class="detail-value">46-20260108132933907</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Created_at</div>
+                                    <div class="detail-value">2026-01-08T13:29:34Z</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Completed_at</div>
+                                    <div class="detail-value">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closeModal('editModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="sendEmailModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Change Status</h3>
+                <button type="button" class="modal-close" id="closeEmailModalBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round" style="pointer-events: none;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="user-info">
+                    <div class="form-group col-1">
+                        <label for="appstatus">Application Status <span class="required">*</span></label>
+                        <select id="appstatus" name="appstatus" required>
+                            <option value="" disabled selected>Select option</option>
+                            <option value="1">Approve</option>
+                            <option value="2">Reject</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal secondary" id="cancelEmailModalBtn">Cancel</button>
+                <button type="button" class="btn-modal primary">Update Status</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="modal-overlay" id="deleteModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Delete User</h3>
+                <button class="modal-close" onclick="closeModal('deleteModal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+                <div class="user-info">
+                    <p><strong>Name:</strong> John William</p>
+                    <p><strong>Email:</strong> jwilliam@email.com</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closeModal('deleteModal')">Cancel</button>
+                <button class="btn-modal danger">Delete User</button>
+            </div>
+        </div>
+    </div> -->
+
+    <script>
+        // Search functionality
+        document.querySelector('.btn-search.primary').addEventListener('click', function () {
+            const searchValue = document.getElementById('searchInput').value;
+            if (searchValue) {
+                alert('Searching for: ' + searchValue);
+            }
+        });
+
+        document.querySelector('.btn-search.secondary').addEventListener('click', function () {
+            document.getElementById('searchInput').value = '';
+        });
+
+        const logOut = document.getElementById('logout');
+        logOut.addEventListener('click', function (e) {
+            window.location.href = '/Accounts/login.html'
+        });
+
+        function toggleDropdown(btn) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu !== btn.nextElementSibling) menu.classList.remove('show');
+            });
+            btn.nextElementSibling.classList.toggle('show');
+        }
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+            }
+        });
+
+        // User Dropdown Toggle
+        function toggleUserDropdown() {
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            const dropdownIcon = document.getElementById('userDropdownIcon');
+
+            dropdownMenu.classList.toggle('show');
+            dropdownIcon.classList.toggle('rotated');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const userProfileWrapper = document.querySelector('.user-profile-wrapper');
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            const dropdownIcon = document.getElementById('userDropdownIcon');
+
+            if (userProfileWrapper && !userProfileWrapper.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+
+        // Toggle Action Dropdown
+        function toggleActionDropdown(button) {
+            // Close all other dropdowns first
+            document.querySelectorAll('.action-dropdown').forEach(dropdown => {
+                if (dropdown !== button.nextElementSibling) {
+                    dropdown.classList.remove('show');
+                    dropdown.previousElementSibling.classList.remove('active');
+                }
+            });
+
+            // Toggle current dropdown
+            const dropdown = button.nextElementSibling;
+            dropdown.classList.toggle('show');
+            button.classList.toggle('active');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.action-wrapper')) {
+                document.querySelectorAll('.action-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                    dropdown.previousElementSibling.classList.remove('active');
+                });
+            }
+        });
+
+        function redirectToReview() {
+            window.location.href = '/Admin/review.html'
+        }
+
+        // Open Modal
+        function openModal(modalId) {
+            // Close action dropdown
+            document.querySelectorAll('.action-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+                dropdown.previousElementSibling.classList.remove('active');
+            });
+
+            const modal = document.getElementById(modalId);
+            modal.classList.add('show');
+        }
+
+        // Close Modal
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const modalCard = modal.querySelector('.modal-card');
+
+            // Add fade out animation
+            modalCard.style.animation = 'fadeOut 0.3s ease-out forwards';
+            modal.style.animation = 'fadeOverlay 0.3s ease-out forwards';
+
+            // Remove after animation
+            setTimeout(() => {
+                modal.classList.remove('show');
+                modalCard.style.animation = '';
+                modal.style.animation = '';
+            }, 300);
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
+
+        // Handle Logout
+        function handleLogout() {
+            window.location.href = '/accounts/login.html';
+        }
+
+        // Close dropdown on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const dropdownMenu = document.getElementById('userDropdownMenu');
+                const dropdownIcon = document.getElementById('userDropdownIcon');
+                dropdownMenu.classList.remove('show');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+        //Summary popup
+        function switchTab(tabId, btn) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to selected tab
+            btn.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function closeModal() {
+            var modal = document.getElementById('editModal');
+            modal.classList.add('closing');
+            setTimeout(function () {
+                modal.classList.remove('show');
+                modal.classList.remove('closing');
+            }, 300);
+        }
+
+        function retrySubmission() {
+            alert('Retrying identity verification submission...');
+        }
+        var modal = document.getElementById('sendEmailModal');
+        var closeBtn = document.getElementById('closeEmailModalBtn');
+        var cancelBtn = document.getElementById('cancelEmailModalBtn');
+
+        function closeEmailModal() {
+            modal.classList.add('closing');
+            setTimeout(function () {
+                modal.classList.remove('show');
+                modal.classList.remove('closing');
+            }, 300);
+        }
+
+        // Close button click
+        closeBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeEmailModal();
+        });
+
+        // Cancel button click
+        cancelBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeEmailModal();
+        });
+
+        // Click outside modal to close
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                closeEmailModal();
+            }
+        });
+
+        // Escape key to close
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                closeEmailModal();
+            }
+        });
+    </script>
+</body>
+
+</html>
