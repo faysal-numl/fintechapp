@@ -1418,13 +1418,28 @@
         .dropdown-header .dropdown-name {
             font-size: 14px;
             font-weight: 600;
-            color: #333333;
+            color: #000000;
         }
 
         .dropdown-header .dropdown-role {
             font-size: 12px;
-            color: #888888;
+            color: #000000;
             margin-top: 2px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #c9a227;
+        }
+
+        .dropdown-item svg {
+            width: 18px;
+            height: 18px;
+            color: #888888;
+        }
+
+        .dropdown-item:hover svg {
+            color: #c9a227;
         }
 
         .dropdown-divider {
@@ -1432,20 +1447,6 @@
             background: #e0e0e0;
             margin: 5px 0;
         }
-
-        .dropdown-item.logout {
-            color: #ff4757;
-        }
-
-        .dropdown-item.logout:hover {
-            background: rgba(255, 71, 87, 0.1);
-            color: #ff4757;
-        }
-
-        .dropdown-item.logout svg {
-            color: #ff4757;
-        }
-
     </style>
 </head>
 
@@ -1568,54 +1569,54 @@
 
         <div class="navbar-user">
             <div class="user-profile-wrapper">
-                <div class="user-profile" onclick="toggleUserDropdown()">
+                <div class="user-profile" id="userProfileBtn" onclick="toggleUserDropdown()">
                     <div class="user-avatar">A</div>
-                    <span class="user-name">AA Securities</span>
-                    <svg class="user-dropdown-icon" id="userDropdownIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2">
-                        <polyline points="6 9 12 15 18 9" />
+                    <span class="user-name">AA Correspondent</span>
+                    <svg class="user-dropdown" id="userDropdownIcon" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                 </div>
                 <div class="user-dropdown-menu" id="userDropdownMenu">
                     <div class="dropdown-header">
                         <div class="dropdown-name">AA Securities</div>
-                        <div class="dropdown-role">Administrator</div>
+                        <div class="dropdown-role">Correspondent</div>
                     </div>
                     <a href="profile.html" class="dropdown-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        My Profile
+                        Profile
                     </a>
-                    <a href="settings.html" class="dropdown-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    <a href="change-password.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         </svg>
-                        Settings
+                        Change Password
                     </a>
-                    <div class="dropdown-divider"></div>
-                    <button class="dropdown-item logout" id="logoutDropdown">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        Logout
-                    </button>
+
                 </div>
             </div>
-            <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                </svg></button>
-            <button class="icon-btn" id="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <polyline points="16 17 21 12 16 7" />
-                    <line x1="21" y1="12" x2="9" y2="12" />
-                </svg></button>
+            <button class="icon-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </button>
+            <button class="icon-btn" id="logout" onclick="handleLogout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
         </div>
     </nav>
 
@@ -2021,7 +2022,9 @@
                                     <tr>
                                         <td>-</td>
                                         <td>William Blake</td>
-                                        <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bfc8d6d3d3d6ded291d2d0d1ffc6d0cfd2ded6d391dcd0d2">[email&#160;protected]</a></td>
+                                        <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                                                data-cfemail="bfc8d6d3d3d6ded291d2d0d1ffc6d0cfd2ded6d391dcd0d2">[email&#160;protected]</a>
+                                        </td>
                                         <td class="status-not-completed">Not Completed</td>
                                         <td>214-799-6565</td>
                                         <td>123 Main St, Unit 42</td>
@@ -2350,7 +2353,8 @@
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
         function toggleNavDropdown(e) {
             e.preventDefault();
             document.getElementById('usersDropdown').classList.toggle('show');
@@ -2376,7 +2380,7 @@
         });
         const logOut = document.getElementById('logout');
         logOut.addEventListener('click', function (e) {
-            window.location.href = '/Accounts/login.html'
+            window.location.href = '/accounts/login.html'
         });
 
         function redirectToReview() {
@@ -2527,7 +2531,7 @@
         var logoutDropdown = document.getElementById('logoutDropdown');
         if (logoutDropdown) {
             logoutDropdown.addEventListener('click', function (e) {
-                window.location.href = '/Accounts/login.html';
+                window.location.href = '/accounts/login.html';
             });
         }
     </script>

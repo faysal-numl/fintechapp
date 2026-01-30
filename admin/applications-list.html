@@ -236,12 +236,12 @@
         .dropdown-header .dropdown-name {
             font-size: 14px;
             font-weight: 600;
-            color: #333333;
+            color: #000000;
         }
 
         .dropdown-header .dropdown-role {
             font-size: 12px;
-            color: #888888;
+            color: #000000;
             margin-top: 2px;
         }
 
@@ -251,7 +251,7 @@
             gap: 12px;
             padding: 14px 20px;
             font-size: 14px;
-            color: #333333;
+            color: #cccccc;
             text-decoration: none;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -1439,37 +1439,7 @@
                 transform: translateY(0);
             }
         }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
-            font-size: 13px;
-            color: #cccccc;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(212, 175, 55, 0.1);
-            color: #d4af37;
-        }
-
-        .dropdown-item svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: #333333;
-            margin: 5px 0;
-        }
+       
     </style>
 </head>
 
@@ -2163,7 +2133,7 @@
 
         const logOut = document.getElementById('logout');
         logOut.addEventListener('click', function (e) {
-            window.location.href = '/Accounts/login.html'
+            window.location.href = '/accounts/login.html'
         });
 
         function toggleDropdown(btn) {
